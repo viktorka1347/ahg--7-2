@@ -74,6 +74,7 @@ export default class DeleteForm {
     try {
       this.parentWidget.redraw(await runRequest(params));
     } catch (error) {
+      // eslint-disable-next-line no-alert
       alert(error);
     }
 
