@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import EditForm from './EditForm';
 import DeleteForm from './DeleteForm';
 import runRequest from '../api/request';
@@ -220,6 +221,7 @@ export default class HelpDeskWidget {
     try {
       this.redraw(await runRequest(params));
     } catch (error) {
+      // eslint-disable-next-line no-alert
       alert(error);
     }
   }
