@@ -106,6 +106,7 @@ export default class HelpDeskWidget {
     try {
       this.redraw(await runRequest(params));
     } catch (error) {
+      // eslint-disable-next-line no-alert
       alert(error);
     }
   }

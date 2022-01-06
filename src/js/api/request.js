@@ -1,10 +1,13 @@
 export default function runRequest(options = {}) {
   return new Promise((resolve, reject) => {
     const {
-      headers, data, responseType, method,
+      headers,
+      data,
+      responseType,
+      method,
     } = options;
 
-    const url = 'https://ahj-7-1.herokuapp.com';
+    const url = 'https://viktorka-heroku.herokuapp.com/';
 
     const params = new URLSearchParams();
     for (const key in data) {
