@@ -7,7 +7,7 @@ export default function runRequest(options = {}) {
       method,
     } = options;
 
-    const url = 'https://ajs-7-2.herokuapp.com/';
+    const url = 'https://viktorka-heroku.herokuapp.com/';
 
     const params = new URLSearchParams();
     for (const key in data) {
