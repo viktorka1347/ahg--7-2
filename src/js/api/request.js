@@ -8,7 +8,7 @@ export default function runRequest(options = {}) {
       method,
     } = options;
 
-    const url = "https://vika45.herokuapp.com/";
+    const url = "https://viktorka-heroku.herokuapp.com/";
 
     const params = new URLSearchParams();
     for (const key in data) {
