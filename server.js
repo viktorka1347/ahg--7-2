@@ -1,19 +1,21 @@
 /* eslint-disable import/no-unresolved */
+import { createServer } from 'http';
+import Koa from 'koa';
+import koaBody from 'koa-body';
+
+import { join } from 'path';
+import {
+  existsSync, mkdirSync, readdirSync, unlinkSync,
+} from 'fs';
+
+import koaStatic from 'koa-static';
+
 const images = [];
 
-const http = require('http');
-const Koa = require('koa');
-const koaBody = require('koa-body');
-
-const path = require('path');
-const fs = require('fs');
-
-const fileDir = path.join(__dirname, '/public');
-if (!fs.existsSync(fileDir)) {
-  fs.mkdirSync(fileDir);
+const fileDir = join(__dirname, '/public');
+if (!existsSync(fileDir)) {
+  mkdirSync(fileDir);
 }
-
-const koaStatic = require('koa-static');
 
 const app = new Koa();
 
@@ -94,7 +96,7 @@ app.use(async (ctx, next) => {
     case 'addImages':
       index = images.length ? images[images.length - 1].id + 1 : 1;
 
-      fs.readdirSync(fileDir).forEach((fileName) => {
+      readdirSync(fileDir).forEach((fileName) => {
         if (images.findIndex(({ name }) => name === fileName) < 0) {
           images.push({
             id: index,
@@ -114,7 +116,7 @@ app.use(async (ctx, next) => {
         return null;
       }
 
-      fs.unlinkSync(`${fileDir}/${images[index].name}`);
+      unlinkSync(`${fileDir}/${images[index].name}`);
       images.splice(index, 1);
 
       ctx.response.body = JSON.stringify(images);
@@ -131,4 +133,4 @@ app.use(async (ctx) => {
 });
 
 const port = process.env.PORT || 7070;
-http.createServer(app.callback()).listen(port);
+createServer(app.callback()).listen(port);
