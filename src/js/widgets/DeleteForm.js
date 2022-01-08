@@ -1,4 +1,3 @@
-/* eslint-disable no-alert */
 import runRequest from '../api/request';
 
 export default class DeleteForm {
