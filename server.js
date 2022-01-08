@@ -1,31 +1,30 @@
-/* eslint-disable import/no-unresolved */
 import { createServer } from 'http';
+// eslint-disable-next-line import/no-unresolved
 import Koa from 'koa';
+// eslint-disable-next-line import/no-unresolved
 import koaBody from 'koa-body';
 
-import { join } from 'path';
-import {
-  existsSync, mkdirSync, readdirSync, unlinkSync,
-} from 'fs';
+const tickets = [];
 
-import koaStatic from 'koa-static';
-
-const images = [];
-
-const fileDir = join(__dirname, '/public');
-if (!existsSync(fileDir)) {
-  mkdirSync(fileDir);
-}
+const fullToShort = () => JSON.stringify(
+  tickets.map(({
+    id,
+    name,
+    status,
+    created,
+  }) => ({
+    id,
+    name,
+    status,
+    created,
+  })),
+);
 
 const app = new Koa();
 
-app.use(koaStatic(fileDir));
-
 app.use(
   koaBody({
-    formidable: { uploadDir: fileDir },
     urlencoded: true,
-    multipart: true,
   }),
 );
 
@@ -70,11 +69,24 @@ app.use(async (ctx, next) => {
     return next();
   }
 
-  const { method } = ctx.request.query;
+  const { method, id: reqId } = ctx.request.query;
+
+  let ticket;
 
   switch (method) {
-    case 'allImages':
-      ctx.response.body = JSON.stringify(images);
+    case 'allTickets':
+      ctx.response.body = fullToShort();
+      return null;
+
+    case 'ticketById':
+      ticket = tickets.find(({ id }) => id === +reqId);
+
+      if (!ticket) {
+        ctx.response.status = 404;
+        return null;
+      }
+
+      ctx.response.body = ticket.description;
       return null;
 
     default:
@@ -88,38 +100,55 @@ app.use(async (ctx, next) => {
     return next();
   }
 
-  const { method, id } = ctx.request.body;
+  const {
+    method,
+    id: reqId,
+    name: reqName,
+    description: reqDescription,
+    status: reqStatus,
+  } = ctx.request.body;
 
+  let ticket;
   let index;
 
   switch (method) {
-    case 'addImages':
-      index = images.length ? images[images.length - 1].id + 1 : 1;
+    case 'createTicket':
+      if (!reqId) {
+        tickets.push({
+          id: tickets.length ? tickets[tickets.length - 1].id + 1 : 1,
+          name: reqName,
+          description: reqDescription,
+          status: reqStatus,
+          created: Date.now(),
+        });
 
-      readdirSync(fileDir).forEach((fileName) => {
-        if (images.findIndex(({ name }) => name === fileName) < 0) {
-          images.push({
-            id: index,
-            name: fileName,
-          });
-        }
-      });
+        ctx.response.body = fullToShort();
+        return null;
+      }
 
-      ctx.response.body = JSON.stringify(images);
+      ticket = tickets.find(({ id }) => id === +reqId);
+
+      if (!ticket) {
+        ctx.response.status = 404;
+        return null;
+      }
+
+      ticket.name = reqName;
+      ticket.description = reqDescription;
+      ticket.status = reqStatus;
+      ctx.response.body = fullToShort();
       return null;
 
-    case 'deleteImage':
-      index = images.findIndex((image) => image.id === +id);
+    case 'deleteTicket':
+      index = tickets.findIndex(({ id }) => id === +reqId);
 
       if (index < 0) {
         ctx.response.status = 404;
         return null;
       }
 
-      unlinkSync(`${fileDir}/${images[index].name}`);
-      images.splice(index, 1);
-
-      ctx.response.body = JSON.stringify(images);
+      tickets.splice(index, 1);
+      ctx.response.body = fullToShort();
       return null;
 
     default:
