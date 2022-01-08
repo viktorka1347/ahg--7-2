@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import EditForm from './EditForm';
 import DeleteForm from './DeleteForm';
 import runRequest from '../api/request';
