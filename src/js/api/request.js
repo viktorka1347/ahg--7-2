@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 export default function runRequest(options = {}) {
     return new Promise((resolve, reject) => {
         const {
