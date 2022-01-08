@@ -1,17 +1,12 @@
-/* eslint-disable import/no-unresolved */
 const tickets = [];
 
 const http = require('http');
-
-const Koa = require('koa'); // eslint-disable-next-line import/no-unresolved
+const Koa = require('koa');
 const koaBody = require('koa-body');
 
 const fullToShort = () => JSON.stringify(
   tickets.map(({
-    id,
-    name,
-    status,
-    created,
+    id, name, status, created,
   }) => ({
     id,
     name,
